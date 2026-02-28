@@ -10,11 +10,11 @@ metadata:
     nginx.ingress.kubernetes.io/limit-rps: "10"
     nginx.ingress.kubernetes.io/limit-burst-multiplier: "2"
 
-    # Force redirect HTTP -> HTTPS (Control CD2-02)
+    # Force redirect HTTP -> HTTPS (Control CD3-02)
     nginx.ingress.kubernetes.io/ssl-redirect: "true"
     nginx.ingress.kubernetes.io/force-ssl-redirect: "true"
 
-    # rate limit (Control CD2-04)
+    # rate limit (Control CD3-04)
     nginx.ingress.kubernetes.io/limit-rps: "10"
 spec:
   tls:

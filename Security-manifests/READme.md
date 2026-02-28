@@ -1,4 +1,4 @@
-## Configuration for CD2-02 – Create Self-Signed TLS Certificate (PoC)
+## Configuration for CD3-02 – Create Self-Signed TLS Certificate (PoC)
 
 ### 1. Generate Certificate (Git Bash / WSL)
 

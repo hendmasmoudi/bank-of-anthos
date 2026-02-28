@@ -1,0 +1,43 @@
+# ==========================================================
+# filename: rbac-auditor.yaml
+# RBAC: Read-only Auditor Role
+# Scope: Namespace "default"
+# Purpose: Auditing and visibility without operational capability
+# Permitted actions:
+#   - Read-only access to common resources (pods, services, deployments, configmaps)
+#   - View logs for audit/troubleshooting
+#   - NO create/update/delete anywhere
+# ==========================================================
+
+apiVersion: rbac.authorization.k8s.io/v1
+kind: Role
+metadata:
+  name: boa-auditor
+  namespace: default
+rules:
+  - apiGroups: [""]
+    resources: ["pods", "services", "endpoints", "configmaps"]
+    verbs: ["get", "list", "watch"]
+
+  - apiGroups: ["apps"]
+    resources: ["deployments", "replicasets"]
+    verbs: ["get", "list", "watch"]
+
+  - apiGroups: [""]
+    resources: ["pods/log"]
+    verbs: ["get"]
+
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: boa-auditor-binding
+  namespace: default
+subjects:
+  - kind: User
+    name: boa-auditor
+    apiGroup: rbac.authorization.k8s.io
+roleRef:
+  kind: Role
+  name: boa-auditor
+  apiGroup: rbac.authorization.k8s.io

@@ -1,0 +1,51 @@
+# ==========================================================
+# filename: rbac-operator.yaml
+# RBAC: Operator Role
+# Scope: Namespace "default"
+# Purpose: Routine operations with least privilege (no cluster-wide changes)
+# Permitted actions:
+#   - Manage Deployments/ReplicaSets/Pods (create/update/delete within namespace)
+#   - Read Services/Endpoints (view, troubleshoot)
+#   - View Logs and Pod status
+#   - NO permissions to modify RBAC, Nodes, Namespaces, or Admission settings
+# ==========================================================
+
+apiVersion: rbac.authorization.k8s.io/v1
+kind: Role
+metadata:
+  name: boa-operator
+  namespace: default
+rules:
+  # Workload operations (typical day-to-day)
+  - apiGroups: ["apps"]
+    resources: ["deployments", "replicasets"]
+    verbs: ["get", "list", "watch", "create", "update", "patch", "delete"]
+
+  - apiGroups: [""]
+    resources: ["pods"]
+    verbs: ["get", "list", "watch", "create", "delete"]
+
+  # Troubleshooting: read pod logs + status
+  - apiGroups: [""]
+    resources: ["pods/log"]
+    verbs: ["get"]
+
+  # Services for basic troubleshooting
+  - apiGroups: [""]
+    resources: ["services", "endpoints"]
+    verbs: ["get", "list", "watch"]
+
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: boa-operator-binding
+  namespace: default
+subjects:
+  - kind: User
+    name: boa-operator
+    apiGroup: rbac.authorization.k8s.io
+roleRef:
+  kind: Role
+  name: boa-operator
+  apiGroup: rbac.authorization.k8s.io

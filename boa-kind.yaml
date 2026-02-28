@@ -1,13 +1,32 @@
 kind: Cluster
 apiVersion: kind.x-k8s.io/v1alpha4
 name: boa
+
 nodes:        
-- role: control-plane
-  extraPortMappings:
-  - containerPort: 80
-    hostPort: 80
-    protocol: TCP
-  - containerPort: 443
-    hostPort: 443               
-    protocol: TCP
-- role: worker
+  - role: control-plane
+
+    # Mount the dedicated client CA into the control-plane container.
+    # This CA is used ONLY to validate client certificates for authentication.
+    extraMounts:
+      - hostPath: /c/hendm/Bank-of-Anthos-NewSetup/bank-of-anthos/pki/ca.crt
+        containerPath: /etc/kubernetes/pki/boa-client-ca.crt
+        readOnly: true
+
+    # Configure the Kubernetes API server to trust the mounted CA for client auth.
+    kubeadmConfigPatches:
+      - |
+        kind: ClusterConfiguration
+        apiServer:
+          extraArgs:
+            client-ca-file: /etc/kubernetes/pki/ca.crt
+
+    # Expose only ingress entry ports to the host.
+    extraPortMappings:
+      - containerPort: 80
+        hostPort: 80
+        protocol: TCP
+      - containerPort: 443
+        hostPort: 443               
+        protocol: TCP
+
+  - role: worker
